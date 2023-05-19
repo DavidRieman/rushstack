@@ -665,6 +665,7 @@ export class JestPlugin implements IHeftPlugin<IJestPluginOptions> {
     const config: IHeftStringParameter = heftSession.commandLine.registerStringParameter({
       associatedActionNames: ['test'],
       parameterLongName: '--config',
+      parameterShortName: '-c',
       argumentName: 'RELATIVE_PATH',
       description:
         'Use this parameter to control which Jest configuration file will be used to run Jest tests.' +
