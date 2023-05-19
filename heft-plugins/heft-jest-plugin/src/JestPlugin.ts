@@ -75,6 +75,7 @@ export interface IJestPluginOptions {
   passWithNoTests?: boolean;
   silent?: boolean;
   testNamePattern?: string;
+  testPathIgnorePatterns?: ReadonlyArray<string>;
   testPathPattern?: ReadonlyArray<string>;
   testTimeout?: number;
   updateSnapshots?: boolean;
@@ -202,6 +203,9 @@ export class JestPlugin implements IHeftPlugin<IJestPluginOptions> {
 
       silent: options?.silent || false,
       testNamePattern: options?.testNamePattern,
+      testPathIgnorePatterns: options?.testPathIgnorePatterns
+        ? [...options.testPathIgnorePatterns]
+        : undefined,
       testPathPattern: options?.testPathPattern ? [...options.testPathPattern] : undefined,
       testTimeout: options?.testTimeout,
       maxWorkers: options?.maxWorkers,
@@ -756,9 +760,20 @@ export class JestPlugin implements IHeftPlugin<IJestPluginOptions> {
       argumentName: 'REGEXP',
       description:
         'Run only tests with a source file path that matches a regular expression.' +
-        ' On Windows you will need to use "/" instead of "\\"' +
+        ' On Windows you will need to use "/" instead of "\\".' +
         ' This corresponds to the "--testPathPattern" parameter in Jest\'s documentation.'
     });
+
+    const testPathIgnorePatterns: IHeftStringListParameter =
+      heftSession.commandLine.registerStringListParameter({
+        associatedActionNames: ['test'],
+        parameterLongName: '--test-path-ignore-patterns',
+        argumentName: 'REGEXP',
+        description:
+          'Avoid running tests with a source file path that matches one ore more regular expressions.' +
+          ' On Windows you will need to use "/" instead of "\\".' +
+          ' This corresponds to the "--testPathIgnorePatterns" parameter in Jest\'s documentation.'
+      });
 
     const testTimeout: IHeftIntegerParameter = heftSession.commandLine.registerIntegerParameter({
       associatedActionNames: ['test'],
@@ -793,6 +808,7 @@ export class JestPlugin implements IHeftPlugin<IJestPluginOptions> {
         passWithNoTests: true, // this._passWithNoTests.value,
         silent: silent.value,
         testNamePattern: testNamePattern.value,
+        testPathIgnorePatterns: testPathIgnorePatterns.value,
         testPathPattern: testPathPattern.value,
         testTimeout: testTimeout.value,
         updateSnapshots: updateSnapshotsFlag.value
